@@ -2,7 +2,8 @@ config {
   type: "table",
   bigquery: {
     partitionBy: "DATE(SETTLEMENTDATE)"
-  }
+  },
+  tags: ["Reporting Table for Google Data Studio"]
 }
 
 
