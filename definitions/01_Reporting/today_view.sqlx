@@ -47,7 +47,7 @@ union all
           else DUIDtable.StationName
         end as StationName
       FROM
-        `test-187010.aemodataset.TODAYDUID` as Dailytable
+        ${ref("TODAYDUID")} as Dailytable
         LEFT JOIN ${ref("DUID")} as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
       WHERE
         date(settlementdate) = CURRENT_DATE('+10:00')
