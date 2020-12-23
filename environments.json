@@ -3,15 +3,6 @@
     {
       "name": "production",
       "configOverride": {},
-      "schedules": [
-        {
-          "name": "new_schedule",
-          "cron": "4-59/5 * * * *",
-          "tags": [
-            "Google Data Studio-MV"
-          ]
-        }
-      ],
       "gitRef": "master"
     }
   ]
