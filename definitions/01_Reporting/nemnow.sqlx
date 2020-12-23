@@ -1,0 +1,24 @@
+config {
+  type: "view"
+}
+
+SELECT
+  SETTLEMENTDATE,
+  StationName,
+  technology,
+  FuelSourceDescriptor,
+  Region,
+  min(latitude) as latitude,
+  min(longitude) as longitude,
+  sum(SCADAVALUE) AS MW
+FROM
+  ${ref("today_view")}
+where
+  now = 1
+  and SCADAVALUE <> 0
+group by
+  1,
+  2,
+  3,
+  4,
+  5
