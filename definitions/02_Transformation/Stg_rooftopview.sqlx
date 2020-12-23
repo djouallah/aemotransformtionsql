@@ -1,0 +1,61 @@
+config {
+  type: "view"
+}
+
+SELECT
+SETTLEMENTDATE,DUID,
+LAST_VALUE(SCADAVALUE ignore nulls) OVER (
+    PARTITION BY DUID ORDER BY SETTLEMENTDATE) AS SCADAVALUE,
+    (LAST_VALUE(SCADAVALUE ignore nulls ) OVER (
+    PARTITION BY DUID ORDER BY SETTLEMENTDATE))/12 AS Mwh,
+    EXTRACT(DATE FROM SETTLEMENTDATE) AS date,
+    FORMAT_TIMESTAMP('%H%M',SETTLEMENTDATE) AS hourminute,
+    REGIONID AS Region,
+  "Rooftop" as Technology,
+  "Rooftop" as FuelSourceDescriptor,
+  concat(REGIONID," Rooftop") AS StationName,
+  case when SETTLEMENTDATE = maxdate then 1 else 0 end as now,RRP,
+  SCADAVALUE as SCADAVALUEORIGIN, 
+FROM (
+with tt as (SELECT
+  distinct SETTLEMENTDATE,DUID,
+  CASE
+    WHEN DUID="QLDS" THEN "QLD1"
+    WHEN DUID="QLDN" THEN "QLD1"
+    WHEN DUID="QLDC" THEN "QLD1"
+    WHEN DUID="TASS" THEN "TAS1"
+    WHEN DUID="TASN" THEN "TAS1"
+  ELSE
+  DUID
+END
+  AS REGIONID
+FROM
+   ${ref("TODAYDUID")}
+  CROSS JOIN unnest ( ARRAY["QLD1","VIC1","NSW1","SA1","TAS1"]) DUID
+WHERE
+  DATE( SETTLEMENTDATE ) = CURRENT_DATE('+10:00')
+  group by SETTLEMENTDATE,DUID
+ 
+  )
+select dd.SCADAVALUE,tt.DUID,tt.SETTLEMENTDATE,d.maxdate,tt.regionid,max(ff.rrp) as rrp
+
+  from tt
+left join
+(SELECT
+  REGIONID AS DUID,
+  INTERVAL_DATETIME AS SETTLEMENTDATE,
+  MAX(POWER) AS SCADAVALUE
+FROM
+  ${ref("rooftoptoday")} 
+WHERE
+  DATE(INTERVAL_DATETIME) = CURRENT_DATE('+10:00') and REGIONID not in("QLDS","QLDN","QLDC","TASS","TASN")
+GROUP BY
+  1,
+  2
+) as dd
+ on tt.SETTLEMENTDATE = dd.SETTLEMENTDATE and tt.DUID = dd.DUID
+ cross join (SELECT max (SETTLEMENTDATE) as maxdate FROM `test-187010.aemodataset.TODAYDUID` WHERE DATE(SETTLEMENTDATE) = CURRENT_DATE('+10:00') LIMIT 1) as d
+ left join ${ref("TODAYPRICE")} AS ff
+ ON  tt.SETTLEMENTDATE = ff.SETTLEMENTDATE and tt.regionid = ff.regionid
+ group by 1,2,3,4,5
+ order by tt.SETTLEMENTDATE desc) as xx
