@@ -1,6 +1,10 @@
 config {
-  type: "table"
+  type: "table",
+  bigquery: {
+    partitionBy: "DATE(ts)"
+  }
 }
+
 
 SELECT
   SETTLEMENTDATE,
