@@ -1,0 +1,110 @@
+config {
+  type: "table"
+}
+
+SELECT
+  SETTLEMENTDATE,
+  DUID,
+  SCADAVALUE,
+  Mwh,
+  date,
+  hourminute,
+  Region,
+  Technology,
+  FuelSourceDescriptor,
+  StationName,
+  null as latitude,
+  null as longitude,
+  now,
+  RRP
+from
+   ${ref("Stg_rooftopview")}
+union all
+  (
+    WITH tt as (
+      SELECT
+        Dailytable.SETTLEMENTDATE,
+        Dailytable.DUID,
+        MAX(Dailytable.SCADAVALUE) AS SCADAVALUE,
+        MAX(Dailytable.SCADAVALUE) / 12 AS Mwh,
+        EXTRACT(
+          DATE
+          FROM
+            Dailytable.SETTLEMENTDATE
+        ) AS date,
+        FORMAT_TIMESTAMP('%H%M', Dailytable.SETTLEMENTDATE) AS hourminute,
+        DUIDtable.Region,
+        DUIDtable.Technology,
+        DUIDtable.latitude,
+        DUIDtable.longitude,
+        DUIDtable.FuelSourceDescriptor,
+        CASE
+          when DUIDtable.StationName is null then Dailytable.DUID
+          else DUIDtable.StationName
+        end as StationName
+      FROM
+        `test-187010.aemodataset.TODAYDUID` as Dailytable
+        LEFT JOIN ${ref("DUID")} as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
+      WHERE
+        date(settlementdate) = CURRENT_DATE('+10:00')
+      GROUP BY
+        Dailytable.SETTLEMENTDATE,
+        Dailytable.DUID,
+        StationName,
+        DUIDtable.Region,
+        DUIDtable.FuelSourceDescriptor,
+        DUIDtable.Technology,
+        DUIDtable.latitude,
+        DUIDtable.longitude
+      order by
+        StationName
+    )
+    select
+      tt.SETTLEMENTDATE,
+      DUID,
+      SCADAVALUE,
+      Mwh,
+      date,
+      hourminute,
+      Region,
+      Technology,
+      FuelSourceDescriptor,
+      StationName,
+      latitude,
+      longitude,
+      case
+        when tt.SETTLEMENTDATE = d.maxdate then 1
+        else 0
+      end as now,
+      max(PRICEtable.RRP) as RRP
+    from
+      tt
+      LEFT JOIN ${ref("TODAYPRICE")} as PRICEtable ON tt.region = PRICEtable.REGIONID
+      and tt.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE
+      cross join (
+        SELECT
+          max (SETTLEMENTDATE) as maxdate
+        FROM
+          ${ref("TODAYDUID")}
+        WHERE
+          DATE(SETTLEMENTDATE) = CURRENT_DATE('+10:00')
+        LIMIT
+          1
+      ) as d
+    GROUP BY
+      tt.SETTLEMENTDATE,
+      DUID,
+      SCADAVALUE,
+      Mwh,
+      date,
+      hourminute,
+      Region,
+      Technology,
+      FuelSourceDescriptor,
+      StationName,
+      latitude,
+      longitude,
+      d.maxdate
+    order by
+      tt.SETTLEMENTDATE DESC
+  )
