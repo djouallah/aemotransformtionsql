@@ -1,0 +1,43 @@
+config {
+  schema: "ReportingDataset",
+  type: "table",
+  bigquery: {
+    partitionBy: "YEAR",
+    clusterBy: ["UNIT", "REGIONID", "SETTLEMENTDATE"]
+  },
+  tags: ["Reprting Table PowerBI-MV"]
+}
+
+WITH tt AS(
+  SELECT
+    UNIT,
+    REGIONID,
+    SETTLEMENTDATE,
+    RRP
+  FROM
+    `test-187010.aemodataset.DREGION`
+  WHERE
+    INTERVENTION = "0"
+    AND DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
+  UNION ALL
+  SELECT
+    UNIT,
+    REGIONID,
+    SETTLEMENTDATE,
+    RRP
+  FROM
+    `test-187010.aemodataset.TREGION`
+  WHERE
+    DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
+)
+SELECT
+  CASE
+    when UNIT = "DREGION" then "DUNIT"
+    else "TUNIT"
+  end as UNIT,
+  REGIONID,
+  SETTLEMENTDATE,
+  RRP,
+  DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR
+FROM
+  tt
