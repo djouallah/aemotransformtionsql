@@ -1,6 +1,6 @@
 config {
   schema: "PowerBI",
-  name: "PRICEARCHIVE",
+  name: "PRICEARCHIVEPOWERBI",
   type: "view",
   tags: ["PowerBI"]
 }
