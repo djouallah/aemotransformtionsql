@@ -1,0 +1,10 @@
+config {
+  schema: "PowerBI",
+  type: "view",
+  tags: ["PowerBI"]
+}
+
+SELECT
+  *
+FROM
+  ${ref("DUID")}
