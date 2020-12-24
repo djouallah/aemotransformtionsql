@@ -10,6 +10,13 @@
           "tags": [
             "Google Data Studio-MV"
           ]
+        },
+        {
+          "name": "new_schedule",
+          "cron": "50 5 * * *",
+          "tags": [
+            "Reprting Table PowerBI-MV"
+          ]
         }
       ],
       "gitRef": "master"
