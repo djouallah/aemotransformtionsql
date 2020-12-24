@@ -1,0 +1,14 @@
+config {
+  schema: "PowerBI",
+  name: "PRICEARCHIVE",
+  type: "view",
+  tags: ["PowerBI"]
+}
+
+SELECT
+  UNIT,
+  REGIONID,
+  SETTLEMENTDATE,
+  RRP
+FROM
+  ${ref("PRICEARCHIVE")}
