@@ -1,0 +1,6 @@
+config {
+  type: "declaration",
+  schema: "aemodataset",
+  name: "DREGION",
+  description: "Price very 5 minute, history"
+}
