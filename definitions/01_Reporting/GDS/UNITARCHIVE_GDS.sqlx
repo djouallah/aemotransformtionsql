@@ -1,0 +1,10 @@
+config {
+  schema: "datastudio",
+  type: "view",
+  tags: ["GDS"]
+}
+
+SELECT
+  *
+FROM
+  ${ref("UNITARCHIVE")}
