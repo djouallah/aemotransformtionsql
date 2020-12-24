@@ -1,0 +1,38 @@
+config {
+  type: "table",
+  tags: ["Reprting Table PowerBI/GDS-MV"]
+}
+
+select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETTLEMENTDATE,INITIALMW, DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR from
+(WITH
+    tt AS (
+    SELECT
+        UNIT,DUID, SETTLEMENTDATE,
+        ARRAY_AGG(STRUCT(INTERVENTION, INITIALMW)
+        ORDER BY
+        INTERVENTION DESC LIMIT 1)[OFFSET (0)].* FROM  ${ref("DUNIT")} t
+    WHERE
+        DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00') AND INITIALMW !=0
+    GROUP BY
+        UNIT,
+        DUID,
+        SETTLEMENTDATE
+    ORDER BY
+        duid)
+    SELECT
+    UNIT,DUID,SETTLEMENTDATE,INITIALMW
+    FROM
+    tt
+    UNION ALL
+    SELECT
+    UNIT,
+    DUID,
+    SETTLEMENTDATE,
+    INITIALMW
+    FROM
+    ${ref("TUNIT")}
+    WHERE
+    DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
+    AND INITIALMW !=0) as xxx
+    left join `test-187010.aemodataset.DUID` as yy
+    on xxx.DUID = yy.DUID
