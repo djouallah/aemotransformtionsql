@@ -8,11 +8,11 @@
           "name": "Run every 5 minutes",
           "cron": "4-59/5 * * * *",
           "tags": [
-            "Google Data Studio-MV"
+            "Reporting Table"
           ]
         },
         {
-          "name": "new_schedule",
+          "name": "Run every morning",
           "cron": "0 20 * * *",
           "tags": [
             "Reprting Table PowerBI-MV"
