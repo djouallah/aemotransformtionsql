@@ -1,0 +1,18 @@
+config {
+  schema: "ReportingDataset",
+  type: "view",
+  tags: ["PowerBI"]
+}
+
+SELECT
+  "DUNIT" AS UNIT,
+  REGIONID,
+  SETTLEMENTDATE,
+  MAX(RRP) AS RRP
+FROM
+  ${ref("TODAYPRICE")}
+WHERE
+  DATE(SETTLEMENTDATE) = CURRENT_DATE('+10:00')
+GROUP BY
+UNIT,REGIONID,SETTLEMENTDATE
+  
