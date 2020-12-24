@@ -1,0 +1,13 @@
+config {
+  schema: "PowerBI",
+  type: "view",
+  tags: ["PowerBI"]
+}
+
+SELECT
+  "DUNIT" as UNIT,
+  DUID,
+  SETTLEMENTDATE,
+  SCADAVALUE as INITIALMW
+FROM
+  ${ref("today_view")}
