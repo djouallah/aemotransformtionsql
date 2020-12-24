@@ -1,5 +1,9 @@
 config {
+  schema: "ReportingDataset",
   type: "table",
+  bigquery: {
+    partitionBy: "DATE(SETTLEMENTDATE)"
+  },
   tags: ["Reprting Table PowerBI-MV"]
 }
 
