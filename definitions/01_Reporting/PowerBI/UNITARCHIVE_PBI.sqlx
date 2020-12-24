@@ -1,0 +1,13 @@
+config {
+  schema: "PowerBI",
+  type: "view",
+  tags: ["PowerBI"]
+}
+
+SELECT
+  UNIT,
+  DUID,
+  SETTLEMENTDATE,
+  INITIALMW
+FROM
+  ${ref("UNITARCHIVE")}
