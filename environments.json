@@ -13,7 +13,7 @@
         },
         {
           "name": "new_schedule",
-          "cron": "50 5 * * *",
+          "cron": "0 20 * * *",
           "tags": [
             "Reprting Table PowerBI-MV"
           ]
