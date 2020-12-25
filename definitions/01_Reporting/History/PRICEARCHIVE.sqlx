@@ -5,7 +5,7 @@ config {
     partitionBy: "YEAR",
     clusterBy: ["UNIT", "REGIONID", "SETTLEMENTDATE"]
   },
-  tags: ["Reprting Table PowerBI-MV"]
+  tags: ["Reporting Table History Data"]
 }
 
 WITH tt AS(
