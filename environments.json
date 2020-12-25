@@ -16,7 +16,10 @@
           "cron": "0 20 * * *",
           "tags": [
             "Reporting Table History Data"
-          ]
+          ],
+          "options": {
+            "includeDependents": true
+          }
         }
       ],
       "gitRef": "master"
