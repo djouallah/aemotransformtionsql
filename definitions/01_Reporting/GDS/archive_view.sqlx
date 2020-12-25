@@ -4,7 +4,7 @@ config {
   bigquery: {
     clusterBy: ["SETTLEMENTDATE"]
   },
-  tags: ["GDS_MV"]
+  tags: ["GDS"]
 }
 
 WITH tt as (

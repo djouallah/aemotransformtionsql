@@ -1,0 +1,40 @@
+config {
+  schema: "datastudio",
+  type: "table",
+  bigquery: {
+    partitionBy: "YEAR",
+    clusterBy: ["date"]
+  },
+  tags: ["GDS"]
+}
+
+with xx as (
+  SELECT
+    *,
+    RRP * Mwh as revenue,
+    case
+      when RRP < 0 then "Negative"
+      else "positive"
+    end as price_split
+  FROM
+     ${ref("archive_view")}
+)
+select
+  StationName,
+  Technology,
+  FuelSourceDescriptor,
+  Region,
+  price_split,
+  date,
+  DATE_TRUNC(date, YEAR) YEAR,
+  sum(Mwh) as Mwh,
+  sum(revenue) as revenue
+from
+  xx
+group by
+  1,
+  2,
+  3,
+  4,
+  5,
+  6
