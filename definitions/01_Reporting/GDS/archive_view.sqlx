@@ -9,36 +9,33 @@ config {
 
 WITH tt as (
   SELECT
-    Dailytable.SETTLEMENTDATE,
-    Dailytable.DUID,
+    SETTLEMENTDATE,
+    DUID,
     MAX(Dailytable.INITIALMW) AS SCADAVALUE,
     MAX(Dailytable.INITIALMW) / 2 AS Mwh,
     EXTRACT(
       DATE
       FROM
-        Dailytable.SETTLEMENTDATE
+        SETTLEMENTDATE
     ) AS date,
     FORMAT_TIMESTAMP('%H%M', Dailytable.SETTLEMENTDATE) AS hourminute,
-    DUIDtable.Region,
-    DUIDtable.Technology,
-    DUIDtable.FuelSourceDescriptor,
-    CASE
-      when DUIDtable.StationName is null then Dailytable.DUID
-      else DUIDtable.StationName
-    end as StationName
+    Region,
+    Technology,
+    FuelSourceDescriptor,
+    StationName
   FROM
     ${ref("UNITARCHIVE")} as Dailytable
-    LEFT JOIN ${ref("DUID")} as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
+    
   WHERE
     INITIALMW <> 0
     and UNIT = "TUNIT"
   GROUP BY
-    Dailytable.SETTLEMENTDATE,
-    Dailytable.DUID,
+    SETTLEMENTDATE,
+    DUID,
     StationName,
-    DUIDtable.Region,
-    DUIDtable.FuelSourceDescriptor,
-    DUIDtable.Technology
+    Region,
+    FuelSourceDescriptor,
+    Technology
   order by
     StationName
 )
