@@ -1,0 +1,69 @@
+config {
+  schema: "datastudio",
+  type: "view",
+  tags: ["GDS"]
+}
+
+WITH tt as (
+  SELECT
+    Dailytable.SETTLEMENTDATE,
+    Dailytable.DUID,
+    MAX(Dailytable.INITIALMW) AS SCADAVALUE,
+    MAX(Dailytable.INITIALMW) / 2 AS Mwh,
+    EXTRACT(
+      DATE
+      FROM
+        Dailytable.SETTLEMENTDATE
+    ) AS date,
+    FORMAT_TIMESTAMP('%H%M', Dailytable.SETTLEMENTDATE) AS hourminute,
+    DUIDtable.Region,
+    DUIDtable.Technology,
+    DUIDtable.FuelSourceDescriptor,
+    CASE
+      when DUIDtable.StationName is null then Dailytable.DUID
+      else DUIDtable.StationName
+    end as StationName
+  FROM
+    ${ref("UNITARCHIVE")} as Dailytable
+    LEFT JOIN `test-187010.aemodataset.DUID` as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
+  WHERE
+    INITIALMW <> 0
+    and date(settlementdate) < CURRENT_DATE('+10:00')
+    and UNIT = "TUNIT"
+  GROUP BY
+    Dailytable.SETTLEMENTDATE,
+    Dailytable.DUID,
+    StationName,
+    DUIDtable.Region,
+    DUIDtable.FuelSourceDescriptor,
+    DUIDtable.Technology
+  order by
+    StationName
+)
+select
+  tt.SETTLEMENTDATE,
+  DUID,
+  SCADAVALUE,
+  Mwh,
+  date,
+  hourminute,
+  Region,
+  Technology,
+  FuelSourceDescriptor,
+  StationName,
+  max(PRICEtable.RRP) as RRP
+from
+  tt
+  LEFT JOIN ${ref("PRICEARCHIVE")} as PRICEtable ON tt.region = PRICEtable.REGIONID
+  and tt.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE
+GROUP BY
+  tt.SETTLEMENTDATE,
+  DUID,
+  SCADAVALUE,
+  Mwh,
+  date,
+  hourminute,
+  Region,
+  Technology,
+  FuelSourceDescriptor,
+  StationName
