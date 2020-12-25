@@ -4,10 +4,9 @@ config {
   tags: ["PowerBI"]
 }
 
-SELECT
-  UNIT,
-  REGIONID,
+SELECT "DUNIT" as UNIT,
+  Region as REGIONID,
   SETTLEMENTDATE,
-  RRP
-FROM
-  ${ref("PRICETODAY")}
+  min(RRP) as RRP FROM ${ref("today_view")}
+  group by 1,2,3
+  
