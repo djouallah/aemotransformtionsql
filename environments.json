@@ -15,7 +15,7 @@
           "name": "Run every morning",
           "cron": "0 20 * * *",
           "tags": [
-            "Reprting Table PowerBI-MV"
+            "Reporting Table History Data"
           ]
         }
       ],
