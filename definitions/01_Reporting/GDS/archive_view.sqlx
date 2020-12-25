@@ -1,7 +1,10 @@
 config {
   schema: "datastudio",
-  type: "view",
-  tags: ["GDS"]
+  type: "table",
+  bigquery: {
+    clusterBy: ["SETTLEMENTDATE"]
+  },
+  tags: ["GDS_MV"]
 }
 
 WITH tt as (
