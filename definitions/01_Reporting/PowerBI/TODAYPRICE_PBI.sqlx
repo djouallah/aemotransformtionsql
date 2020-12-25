@@ -5,6 +5,9 @@ config {
 }
 
 SELECT
-  *
+  UNIT,
+  REGIONID,
+  SETTLEMENTDATE,
+  RRP
 FROM
   ${ref("PRICETODAY")}
