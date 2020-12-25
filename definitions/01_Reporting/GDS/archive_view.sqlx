@@ -28,10 +28,9 @@ WITH tt as (
     end as StationName
   FROM
     ${ref("UNITARCHIVE")} as Dailytable
-    LEFT JOIN `test-187010.aemodataset.DUID` as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
+    LEFT JOIN ${ref("DUID")} as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
   WHERE
     INITIALMW <> 0
-    and date(settlementdate) < CURRENT_DATE('+10:00')
     and UNIT = "TUNIT"
   GROUP BY
     Dailytable.SETTLEMENTDATE,

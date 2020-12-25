@@ -39,5 +39,5 @@ select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETT
     WHERE
     DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
     AND INITIALMW !=0) as xxx
-    left join `test-187010.aemodataset.DUID` as yy
+    left join ${ref("DUID")} as yy
     on xxx.DUID = yy.DUID
