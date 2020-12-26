@@ -10,4 +10,4 @@ SELECT
   SETTLEMENTDATE,
   SCADAVALUE as INITIALMW
 FROM
-  ${ref("today_view")}
+  ${ref("today_Table")}

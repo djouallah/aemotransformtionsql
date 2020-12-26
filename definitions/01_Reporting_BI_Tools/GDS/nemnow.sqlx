@@ -14,7 +14,7 @@ SELECT
   min(longitude) as longitude,
   sum(SCADAVALUE) AS MW
 FROM
-  ${ref("today_view")}
+  ${ref("today_Table")}
 where
   now = 1
   and SCADAVALUE <> 0

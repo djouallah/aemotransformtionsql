@@ -7,6 +7,6 @@ config {
 SELECT "DUNIT" as UNIT,
   Region as REGIONID,
   SETTLEMENTDATE,
-  min(RRP) as RRP FROM ${ref("today_view")}
+  min(RRP) as RRP FROM ${ref("today_Table")}
   group by 1,2,3
   
