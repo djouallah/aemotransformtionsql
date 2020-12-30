@@ -7,6 +7,8 @@ config {
 SELECT "DUNIT" as UNIT,
   Region as REGIONID,
   SETTLEMENTDATE,
+  EXTRACT(DATE FROM SETTLEMENTDATE) as day,
+  EXTRACT(time FROM SETTLEMENTDATE) as time,
   min(RRP) as RRP FROM ${ref("today_Table")}
-  group by 1,2,3
+  group by 1,2,3,4,5
   
