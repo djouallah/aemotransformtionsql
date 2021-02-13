@@ -1,6 +1,6 @@
 config {
   type: "declaration",
   schema: "aemodataset",
-  name: "TUNIT",
+  name: "EXTERNAL_TUNIT",
   description: "Production every 30 minute, history"
 }

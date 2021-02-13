@@ -15,7 +15,7 @@ select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETT
         UNIT,DUID, SETTLEMENTDATE,
         ARRAY_AGG(STRUCT(INTERVENTION, INITIALMW)
         ORDER BY
-        INTERVENTION DESC LIMIT 1)[OFFSET (0)].* FROM  ${ref("DUNIT")} t
+        INTERVENTION DESC LIMIT 1)[OFFSET (0)].* FROM  ${ref("EXTERNAL_DUNIT")} t
     WHERE
         DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00') AND INITIALMW !=0
     GROUP BY
@@ -35,7 +35,7 @@ select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETT
     SETTLEMENTDATE,
     INITIALMW
     FROM
-    ${ref("TUNIT")}
+    ${ref("EXTERNAL_TUNIT")}
     WHERE
     DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
     AND INITIALMW !=0) as xxx
