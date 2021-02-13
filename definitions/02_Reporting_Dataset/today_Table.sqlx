@@ -53,7 +53,7 @@ FROM
           ELSE DUID
         END AS REGIONID
       FROM
-        ${ref("TODAYDUID")}
+        ${ref("EXTERNAL_TODAYDUID")}
         CROSS JOIN unnest (
           ARRAY ["QLD1","VIC1","NSW1","SA1","TAS1"]
         ) DUID
@@ -97,13 +97,13 @@ FROM
         SELECT
           max (SETTLEMENTDATE) as maxdate
         FROM
-          `test-187010.aemodataset.TODAYDUID`
+           ${ref("EXTERNAL_TODAYDUID")}
         WHERE
           DATE(SETTLEMENTDATE) = CURRENT_DATE('+10:00')
         LIMIT
           1
       ) as d
-      left join ${ref("TODAYPRICE")} AS ff ON tt.SETTLEMENTDATE = ff.SETTLEMENTDATE
+      left join ${ref("EXTERNAL_TODAYPRICE")} AS ff ON tt.SETTLEMENTDATE = ff.SETTLEMENTDATE
       and tt.regionid = ff.regionid
     group by
       1,
@@ -155,7 +155,7 @@ union all
           else DUIDtable.StationName
         end as StationName
       FROM
-        ${ref("TODAYDUID")} as Dailytable
+        ${ref("EXTERNAL_TODAYDUID")} as Dailytable
         LEFT JOIN ${ref("DUID")} as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
       WHERE
         date(settlementdate) = CURRENT_DATE('+10:00')
@@ -191,13 +191,13 @@ union all
       max(PRICEtable.RRP) as RRP
     from
       tt
-      LEFT JOIN ${ref("TODAYPRICE")} as PRICEtable ON tt.region = PRICEtable.REGIONID
+      LEFT JOIN ${ref("EXTERNAL_TODAYPRICE")} as PRICEtable ON tt.region = PRICEtable.REGIONID
       and tt.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE
       cross join (
         SELECT
           max (SETTLEMENTDATE) as maxdate
         FROM
-          ${ref("TODAYDUID")}
+          ${ref("EXTERNAL_TODAYDUID")}
         WHERE
           DATE(SETTLEMENTDATE) = CURRENT_DATE('+10:00')
         LIMIT
