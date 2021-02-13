@@ -17,7 +17,7 @@ select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETT
         ORDER BY
         INTERVENTION DESC LIMIT 1)[OFFSET (0)].* FROM  ${ref("EXTERNAL_DUNIT")} t
     WHERE
-        DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00') AND INITIALMW !=0
+         DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00') AND INITIALMW !=0
     GROUP BY
         UNIT,
         DUID,
@@ -37,7 +37,6 @@ select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETT
     FROM
     ${ref("EXTERNAL_TUNIT")}
     WHERE
-    DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
-    AND INITIALMW !=0) as xxx
+    DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00') AND INITIALMW !=0) as xxx
     left join ${ref("DUID")} as yy
     on xxx.DUID = yy.DUID
