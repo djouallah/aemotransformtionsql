@@ -158,7 +158,7 @@ union all
         ${ref("External_SACADA_PARQUET")} as Dailytable
         LEFT JOIN ${ref("DUID")} as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
       WHERE
-        date(settlementdate) = CURRENT_DATE('+10:00')
+        Date = CURRENT_DATE('+10:00')
       GROUP BY
         Dailytable.SETTLEMENTDATE,
         Dailytable.DUID,
