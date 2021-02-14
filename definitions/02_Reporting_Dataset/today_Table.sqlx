@@ -53,12 +53,12 @@ FROM
           ELSE DUID
         END AS REGIONID
       FROM
-        ${ref("EXTERNAL_TODAYDUID")}
+        ${ref("External_SACADA_PARQUET")}
         CROSS JOIN unnest (
           ARRAY ["QLD1","VIC1","NSW1","SA1","TAS1"]
         ) DUID
       WHERE
-        DATE(SETTLEMENTDATE) = CURRENT_DATE('+10:00')
+        Date = CURRENT_DATE('+10:00')
       group by
         SETTLEMENTDATE,
         DUID
@@ -97,9 +97,9 @@ FROM
         SELECT
           max (SETTLEMENTDATE) as maxdate
         FROM
-           ${ref("EXTERNAL_TODAYDUID")}
+           ${ref("External_SACADA_PARQUET")}
         WHERE
-          DATE(SETTLEMENTDATE) = CURRENT_DATE('+10:00')
+          Date = CURRENT_DATE('+10:00')
         LIMIT
           1
       ) as d
@@ -155,7 +155,7 @@ union all
           else DUIDtable.StationName
         end as StationName
       FROM
-        ${ref("EXTERNAL_TODAYDUID")} as Dailytable
+        ${ref("External_SACADA_PARQUET")} as Dailytable
         LEFT JOIN ${ref("DUID")} as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
       WHERE
         date(settlementdate) = CURRENT_DATE('+10:00')
@@ -197,9 +197,9 @@ union all
         SELECT
           max (SETTLEMENTDATE) as maxdate
         FROM
-          ${ref("EXTERNAL_TODAYDUID")}
+          ${ref("External_SACADA_PARQUET")}
         WHERE
-          DATE(SETTLEMENTDATE) = CURRENT_DATE('+10:00')
+          Date = CURRENT_DATE('+10:00')
         LIMIT
           1
       ) as d
