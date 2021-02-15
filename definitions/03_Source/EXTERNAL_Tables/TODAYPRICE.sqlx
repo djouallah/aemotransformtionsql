@@ -1,6 +1,6 @@
 config {
   type: "declaration",
   schema: "aemodataset",
-  name: "EXTERNAL_TODAYPRICE",
+  name: "External_TODAYPRICE_PARQUET",
   description: "TODAYPRICE"
 }

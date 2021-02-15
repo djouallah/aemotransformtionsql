@@ -103,7 +103,7 @@ FROM
         LIMIT
           1
       ) as d
-      left join ${ref("EXTERNAL_TODAYPRICE")} AS ff ON tt.SETTLEMENTDATE = ff.SETTLEMENTDATE
+      left join ${ref("External_TODAYPRICE_PARQUET")} AS ff ON tt.SETTLEMENTDATE = ff.SETTLEMENTDATE
       and tt.regionid = ff.regionid
     group by
       1,
@@ -176,7 +176,7 @@ union all
       DUID,
       SCADAVALUE,
       Mwh,
-      date,
+      tt.date,
       hourminute,
       Region,
       Technology,
@@ -191,7 +191,7 @@ union all
       max(PRICEtable.RRP) as RRP
     from
       tt
-      LEFT JOIN ${ref("EXTERNAL_TODAYPRICE")} as PRICEtable ON tt.region = PRICEtable.REGIONID
+      LEFT JOIN ${ref("External_TODAYPRICE_PARQUET")} as PRICEtable ON tt.region = PRICEtable.REGIONID
       and tt.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE
       cross join (
         SELECT
