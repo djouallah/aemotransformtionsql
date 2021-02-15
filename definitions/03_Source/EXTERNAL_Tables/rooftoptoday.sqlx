@@ -1,6 +1,6 @@
 config {
   type: "declaration",
   schema: "aemodataset",
-  name: "EXTERNAL_ROOFTOP",
+  name: "EXTERNAL_ROOFTOP_PARQUET",
   description: "Roof Top Data"
 }

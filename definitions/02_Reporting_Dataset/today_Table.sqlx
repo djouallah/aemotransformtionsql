@@ -78,7 +78,7 @@ FROM
           INTERVAL_DATETIME AS SETTLEMENTDATE,
           MAX(POWER) AS SCADAVALUE
         FROM
-          ${ref("EXTERNAL_ROOFTOP")}
+          ${ref("EXTERNAL_ROOFTOP_PARQUET")}
         WHERE
           DATE(INTERVAL_DATETIME) = CURRENT_DATE('+10:00')
           and REGIONID not in(
