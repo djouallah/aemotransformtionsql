@@ -8,7 +8,11 @@ config {
   tags: ["Reporting Table History Data"]
 }
 
-select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETTLEMENTDATE,INITIALMW, DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR,DATE_TRUNC(DATE(SETTLEMENTDATE), DAY) DAY from
+select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETTLEMENTDATE,INITIALMW, DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR,DATE_TRUNC(DATE(SETTLEMENTDATE), DAY) DAY , case
+            when UNIT = 'DUNIT'
+            then INITIALMW / 1.2
+            else INITIALMW / 2
+        end as Mwh from
 (WITH
     tt AS (
     SELECT
