@@ -2,7 +2,7 @@ config {
   schema: "ReportingDataset",
   type: "table",
   bigquery: {
-    partitionBy: "YEAR",
+    partitionBy: "MONTH",
     clusterBy: ["UNIT", "SETTLEMENTDATE"]
   },
   tags: ["Reporting Table History Data"]
