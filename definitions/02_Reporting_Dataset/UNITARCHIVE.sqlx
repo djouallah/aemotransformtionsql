@@ -2,13 +2,13 @@ config {
   schema: "ReportingDataset",
   type: "table",
   bigquery: {
-    partitionBy: "YEAR",
+    partitionBy: "MONTH",
     clusterBy: ["UNIT", "SETTLEMENTDATE"]
   },
   tags: ["Reporting Table History Data"]
 }
 
-select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETTLEMENTDATE,INITIALMW, DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR,DATE_TRUNC(DATE(SETTLEMENTDATE), DAY) DAY ,TIME( SETTLEMENTDATE ) AS time, case
+select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology, SETTLEMENTDATE,INITIALMW, DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR,DATE_TRUNC(DATE(SETTLEMENTDATE), DAY) DAY ,DATE_TRUNC(DATE(SETTLEMENTDATE), Month) AS  MONTH,TIME( SETTLEMENTDATE ) AS time, case
             when UNIT = 'DUNIT'
             then INITIALMW / 1.2
             else INITIALMW / 2
