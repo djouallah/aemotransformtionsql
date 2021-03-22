@@ -1,9 +1,7 @@
 config {
   schema: "ReportingDataset",
   type: "table",
-  bigquery: {
-    partitionBy: "DATE(SETTLEMENTDATE)"
-  },
+  
   tags: ["Reporting Table"]
 }
 
