@@ -1,10 +1,10 @@
 config {
   schema: "ReportingDataset",
-  type: "incremental",
+  
   tags: ["Reporting Table"]
 }
 
-with cccc as (
+
   with xxxxxx as (
     SELECT
       SETTLEMENTDATE,
@@ -220,8 +220,5 @@ with cccc as (
       order by
         tt.SETTLEMENTDATE DESC
     )
-)
-SELECT
-  *
-FROM
-  cccc ${when(incremental(), `WHERE SETTLEMENTDATE > (SELECT MAX(SETTLEMENTDATE) FROM ${self()})`)}
+
+
