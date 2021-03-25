@@ -1,6 +1,6 @@
 config {
   schema: "ReportingDataset",
-  
+  type: "table",
   tags: ["Reporting Table"]
 }
 
