@@ -1,220 +1,227 @@
 config {
   schema: "ReportingDataset",
-  type: "table",
-  
+  type: "incremental",
   tags: ["Reporting Table"]
 }
 
-with xxxxxx as (SELECT
-  SETTLEMENTDATE,
-  DUID,
-  LAST_VALUE(SCADAVALUE ignore nulls) OVER (
-    PARTITION BY DUID
-    ORDER BY
-      SETTLEMENTDATE
-  ) AS SCADAVALUE,
-  (
-    LAST_VALUE(SCADAVALUE ignore nulls) OVER (
-      PARTITION BY DUID
-      ORDER BY
-        SETTLEMENTDATE
-    )
-  ) / 12 AS Mwh,
-  EXTRACT(
-    DATE
-    FROM
-      SETTLEMENTDATE
-  ) AS date,
-  FORMAT_TIMESTAMP('%H%M', SETTLEMENTDATE) AS hourminute,
-  REGIONID AS Region,
-  "Rooftop" as Technology,
-  "Rooftop" as FuelSourceDescriptor,
-  concat(REGIONID, " Rooftop") AS StationName,
-  case
-    when SETTLEMENTDATE = maxdate then 1
-    else 0
-  end as now,
-  RRP,
-  SCADAVALUE as SCADAVALUEORIGIN,
-FROM
-  (
-    with tt as (
-      SELECT
-        distinct SETTLEMENTDATE,
-        DUID,
-        CASE
-          WHEN DUID = "QLDS" THEN "QLD1"
-          WHEN DUID = "QLDN" THEN "QLD1"
-          WHEN DUID = "QLDC" THEN "QLD1"
-          WHEN DUID = "TASS" THEN "TAS1"
-          WHEN DUID = "TASN" THEN "TAS1"
-          ELSE DUID
-        END AS REGIONID
-      FROM
-        ${ref("External_SACADA_PARQUET")}
-        CROSS JOIN unnest (
-          ARRAY ["QLD1","VIC1","NSW1","SA1","TAS1"]
-        ) DUID
-      WHERE
-        Date = CURRENT_DATE('+10:00')
-      group by
-        SETTLEMENTDATE,
-        DUID
-    )
-    select
-      dd.SCADAVALUE,
-      tt.DUID,
-      tt.SETTLEMENTDATE,
-      d.maxdate,
-      tt.regionid,
-      max(ff.rrp) as rrp
-    from
-      tt
-      left join (
-        SELECT
-          REGIONID AS DUID,
-          INTERVAL_DATETIME AS SETTLEMENTDATE,
-          MAX(POWER) AS SCADAVALUE
-        FROM
-          ${ref("EXTERNAL_ROOFTOP_PARQUET")}
-        WHERE
-          DATE(INTERVAL_DATETIME) = CURRENT_DATE('+10:00')
-          and REGIONID not in(
-            "QLDS",
-            "QLDN",
-            "QLDC",
-            "TASS",
-            "TASN"
-          )
-        GROUP BY
-          1,
-          2
-      ) as dd on tt.SETTLEMENTDATE = dd.SETTLEMENTDATE
-      and tt.DUID = dd.DUID
-      cross join (
-        SELECT
-          max (SETTLEMENTDATE) as maxdate
-        FROM
-           ${ref("External_SACADA_PARQUET")}
-        WHERE
-          Date = CURRENT_DATE('+10:00')
-        LIMIT
-          1
-      ) as d
-      left join ${ref("External_TODAYPRICE_PARQUET")} AS ff ON tt.SETTLEMENTDATE = ff.SETTLEMENTDATE
-      and tt.regionid = ff.regionid
-    group by
-      1,
-      2,
-      3,
-      4,
-      5
-    order by
-      tt.SETTLEMENTDATE desc
-  ) as xx)
-SELECT
-  SETTLEMENTDATE,
-  DUID,
-  SCADAVALUE,
-  Mwh,
-  date,
-  hourminute,
-  Region,
-  Technology,
-  FuelSourceDescriptor,
-  StationName,
-  null as latitude,
-  null as longitude,
-  now,
-  RRP
-from
-   xxxxxx
-union all
-  (
-    WITH tt as (
-      SELECT
-        Dailytable.SETTLEMENTDATE,
-        Dailytable.DUID,
-        MAX(Dailytable.SCADAVALUE) AS SCADAVALUE,
-        MAX(Dailytable.SCADAVALUE) / 12 AS Mwh,
-        EXTRACT(
-          DATE
-          FROM
-            Dailytable.SETTLEMENTDATE
-        ) AS date,
-        FORMAT_TIMESTAMP('%H%M', Dailytable.SETTLEMENTDATE) AS hourminute,
-        DUIDtable.Region,
-        DUIDtable.Technology,
-        DUIDtable.latitude,
-        DUIDtable.longitude,
-        DUIDtable.FuelSourceDescriptor,
-        CASE
-          when DUIDtable.StationName is null then Dailytable.DUID
-          else DUIDtable.StationName
-        end as StationName
-      FROM
-        ${ref("External_SACADA_PARQUET")} as Dailytable
-        LEFT JOIN ${ref("DUID")} as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
-      WHERE
-        Date = CURRENT_DATE('+10:00')
-      GROUP BY
-        Dailytable.SETTLEMENTDATE,
-        Dailytable.DUID,
-        StationName,
-        DUIDtable.Region,
-        DUIDtable.FuelSourceDescriptor,
-        DUIDtable.Technology,
-        DUIDtable.latitude,
-        DUIDtable.longitude
-      order by
-        StationName
-    )
-    select
-      tt.SETTLEMENTDATE,
+with cccc as (
+  with xxxxxx as (
+    SELECT
+      SETTLEMENTDATE,
       DUID,
-      SCADAVALUE,
-      Mwh,
-      tt.date,
-      hourminute,
-      Region,
-      Technology,
-      FuelSourceDescriptor,
-      StationName,
-      latitude,
-      longitude,
+      LAST_VALUE(SCADAVALUE ignore nulls) OVER (
+        PARTITION BY DUID
+        ORDER BY
+          SETTLEMENTDATE
+      ) AS SCADAVALUE,
+      (
+        LAST_VALUE(SCADAVALUE ignore nulls) OVER (
+          PARTITION BY DUID
+          ORDER BY
+            SETTLEMENTDATE
+        )
+      ) / 12 AS Mwh,
+      EXTRACT(
+        DATE
+        FROM
+          SETTLEMENTDATE
+      ) AS date,
+      FORMAT_TIMESTAMP('%H%M', SETTLEMENTDATE) AS hourminute,
+      REGIONID AS Region,
+      "Rooftop" as Technology,
+      "Rooftop" as FuelSourceDescriptor,
+      concat(REGIONID, " Rooftop") AS StationName,
       case
-        when tt.SETTLEMENTDATE = d.maxdate then 1
+        when SETTLEMENTDATE = maxdate then 1
         else 0
       end as now,
-      max(PRICEtable.RRP) as RRP
-    from
-      tt
-      LEFT JOIN ${ref("External_TODAYPRICE_PARQUET")} as PRICEtable ON tt.region = PRICEtable.REGIONID
-      and tt.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE
-      cross join (
+      RRP,
+      SCADAVALUE as SCADAVALUEORIGIN,
+    FROM
+      (
+        with tt as (
+          SELECT
+            distinct SETTLEMENTDATE,
+            DUID,
+            CASE
+              WHEN DUID = "QLDS" THEN "QLD1"
+              WHEN DUID = "QLDN" THEN "QLD1"
+              WHEN DUID = "QLDC" THEN "QLD1"
+              WHEN DUID = "TASS" THEN "TAS1"
+              WHEN DUID = "TASN" THEN "TAS1"
+              ELSE DUID
+            END AS REGIONID
+          FROM
+            ${ref("External_SACADA_PARQUET")}
+            CROSS JOIN unnest (
+              ARRAY ["QLD1","VIC1","NSW1","SA1","TAS1"]
+            ) DUID
+          WHERE
+            Date = CURRENT_DATE('+10:00')
+          group by
+            SETTLEMENTDATE,
+            DUID
+        )
+        select
+          dd.SCADAVALUE,
+          tt.DUID,
+          tt.SETTLEMENTDATE,
+          d.maxdate,
+          tt.regionid,
+          max(ff.rrp) as rrp
+        from
+          tt
+          left join (
+            SELECT
+              REGIONID AS DUID,
+              INTERVAL_DATETIME AS SETTLEMENTDATE,
+              MAX(POWER) AS SCADAVALUE
+            FROM
+              ${ref("EXTERNAL_ROOFTOP_PARQUET")}
+            WHERE
+              DATE(INTERVAL_DATETIME) = CURRENT_DATE('+10:00')
+              and REGIONID not in(
+                "QLDS",
+                "QLDN",
+                "QLDC",
+                "TASS",
+                "TASN"
+              )
+            GROUP BY
+              1,
+              2
+          ) as dd on tt.SETTLEMENTDATE = dd.SETTLEMENTDATE
+          and tt.DUID = dd.DUID
+          cross join (
+            SELECT
+              max (SETTLEMENTDATE) as maxdate
+            FROM
+              ${ref("External_SACADA_PARQUET")}
+            WHERE
+              Date = CURRENT_DATE('+10:00')
+            LIMIT
+              1
+          ) as d
+          left join ${ref("External_TODAYPRICE_PARQUET")} AS ff ON tt.SETTLEMENTDATE = ff.SETTLEMENTDATE
+          and tt.regionid = ff.regionid
+        group by
+          1,
+          2,
+          3,
+          4,
+          5
+        order by
+          tt.SETTLEMENTDATE desc
+      ) as xx
+  )
+  SELECT
+    SETTLEMENTDATE,
+    DUID,
+    SCADAVALUE,
+    Mwh,
+    date,
+    hourminute,
+    Region,
+    Technology,
+    FuelSourceDescriptor,
+    StationName,
+    null as latitude,
+    null as longitude,
+    now,
+    RRP
+  from
+    xxxxxx
+  union all
+    (
+      WITH tt as (
         SELECT
-          max (SETTLEMENTDATE) as maxdate
+          Dailytable.SETTLEMENTDATE,
+          Dailytable.DUID,
+          MAX(Dailytable.SCADAVALUE) AS SCADAVALUE,
+          MAX(Dailytable.SCADAVALUE) / 12 AS Mwh,
+          EXTRACT(
+            DATE
+            FROM
+              Dailytable.SETTLEMENTDATE
+          ) AS date,
+          FORMAT_TIMESTAMP('%H%M', Dailytable.SETTLEMENTDATE) AS hourminute,
+          DUIDtable.Region,
+          DUIDtable.Technology,
+          DUIDtable.latitude,
+          DUIDtable.longitude,
+          DUIDtable.FuelSourceDescriptor,
+          CASE
+            when DUIDtable.StationName is null then Dailytable.DUID
+            else DUIDtable.StationName
+          end as StationName
         FROM
-          ${ref("External_SACADA_PARQUET")}
+          ${ref("External_SACADA_PARQUET")} as Dailytable
+          LEFT JOIN ${ref("DUID")} as DUIDtable ON Dailytable.DUID = DUIDtable.DUID
         WHERE
           Date = CURRENT_DATE('+10:00')
-        LIMIT
-          1
-      ) as d
-    GROUP BY
-      tt.SETTLEMENTDATE,
-      DUID,
-      SCADAVALUE,
-      Mwh,
-      date,
-      hourminute,
-      Region,
-      Technology,
-      FuelSourceDescriptor,
-      StationName,
-      latitude,
-      longitude,
-      d.maxdate
-    order by
-      tt.SETTLEMENTDATE DESC
-  )
+        GROUP BY
+          Dailytable.SETTLEMENTDATE,
+          Dailytable.DUID,
+          StationName,
+          DUIDtable.Region,
+          DUIDtable.FuelSourceDescriptor,
+          DUIDtable.Technology,
+          DUIDtable.latitude,
+          DUIDtable.longitude
+        order by
+          StationName
+      )
+      select
+        tt.SETTLEMENTDATE,
+        DUID,
+        SCADAVALUE,
+        Mwh,
+        tt.date,
+        hourminute,
+        Region,
+        Technology,
+        FuelSourceDescriptor,
+        StationName,
+        latitude,
+        longitude,
+        case
+          when tt.SETTLEMENTDATE = d.maxdate then 1
+          else 0
+        end as now,
+        max(PRICEtable.RRP) as RRP
+      from
+        tt
+        LEFT JOIN ${ref("External_TODAYPRICE_PARQUET")} as PRICEtable ON tt.region = PRICEtable.REGIONID
+        and tt.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE
+        cross join (
+          SELECT
+            max (SETTLEMENTDATE) as maxdate
+          FROM
+            ${ref("External_SACADA_PARQUET")}
+          WHERE
+            Date = CURRENT_DATE('+10:00')
+          LIMIT
+            1
+        ) as d
+      GROUP BY
+        tt.SETTLEMENTDATE,
+        DUID,
+        SCADAVALUE,
+        Mwh,
+        date,
+        hourminute,
+        Region,
+        Technology,
+        FuelSourceDescriptor,
+        StationName,
+        latitude,
+        longitude,
+        d.maxdate
+      order by
+        tt.SETTLEMENTDATE DESC
+    )
+)
+SELECT
+  *
+FROM
+  cccc ${when(incremental(), `WHERE SETTLEMENTDATE > (SELECT MAX(SETTLEMENTDATE) FROM ${self()})`)}
