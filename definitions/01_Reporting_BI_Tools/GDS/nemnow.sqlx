@@ -3,6 +3,12 @@ config {
   schema: "datastudio",
   tags: ["GDS"]
 }
+WITH
+  maxdate AS (
+  SELECT
+    MAX(SETTLEMENTDATE) as mx
+  FROM
+   ${ref("today_Table")})
 
 SELECT
   SETTLEMENTDATE,
@@ -16,7 +22,7 @@ SELECT
 FROM
   ${ref("today_Table")}
 where
-  now = 1
+   SETTLEMENTDATE = (SELECT mx FROM maxdate LIMIT 1)
   and SCADAVALUE <> 0
 group by
   1,
