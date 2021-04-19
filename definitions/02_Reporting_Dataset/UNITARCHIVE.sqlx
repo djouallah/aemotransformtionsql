@@ -9,66 +9,91 @@ config {
 }
 
 select
-  UNIT,
-  xxx.DUID,
-  StationName,
-  Region,
-  FuelSourceDescriptor,
-  Technology,
-  latitude,
-  longitude,
-  Tech,
-  SETTLEMENTDATE,
-  INITIALMW,
-  DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR,
-  DATE_TRUNC(DATE(SETTLEMENTDATE), DAY) DAY,
-  DATE_TRUNC(DATE(SETTLEMENTDATE), Month) AS MONTH,
-  TIME(SETTLEMENTDATE) AS time,
-  case
-    when UNIT = 'DUNIT' then INITIALMW / 1.2
-    else INITIALMW / 2
-  end as Mwh
+      XXXX.UNIT,
+      DUID,
+      StationName,
+      Region,
+      FuelSourceDescriptor,
+      Technology,
+      latitude,
+      longitude,
+      Tech,
+      XXXX.SETTLEMENTDATE,
+      INITIALMW,
+      XXXX.YEAR,
+      XXXX.DAY,
+      XXXX.MONTH,
+      time,
+      Mwh,
+      min(RRP) as RRP
+      
 from
   (
-    WITH tt AS (
-      SELECT
-        UNIT,
-        DUID,
-        SETTLEMENTDATE,
-        ARRAY_AGG(
-          STRUCT(INTERVENTION, INITIALMW)
+    select
+      xxx.UNIT,
+      xxx.DUID,
+      StationName,
+      Region,
+      FuelSourceDescriptor,
+      Technology,
+      latitude,
+      longitude,
+      Tech,
+      SETTLEMENTDATE,
+      INITIALMW,
+      DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR,
+      DATE_TRUNC(DATE(SETTLEMENTDATE), DAY) DAY,
+      DATE_TRUNC(DATE(SETTLEMENTDATE), Month) AS MONTH,
+      TIME(SETTLEMENTDATE) AS time,
+      case
+        when UNIT = 'DUNIT' then INITIALMW / 1.2
+        else INITIALMW / 2
+      end as Mwh
+    from
+      (
+        WITH tt AS (
+          SELECT
+            UNIT,
+            DUID,
+            SETTLEMENTDATE,
+            ARRAY_AGG(
+              STRUCT(INTERVENTION, INITIALMW)
+              ORDER BY
+                INTERVENTION DESC
+              LIMIT
+                1
+            ) [OFFSET (0)].*
+          FROM
+            ${ref("EXTERNAL_DUNIT")} t
+          WHERE
+            DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
+          GROUP BY
+            UNIT,
+            DUID,
+            SETTLEMENTDATE
           ORDER BY
-            INTERVENTION DESC
-          LIMIT
-            1
-        ) [OFFSET (0)].*
-      FROM
-        ${ref("EXTERNAL_DUNIT")} t
-      WHERE
-        DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
-      GROUP BY
-        UNIT,
-        DUID,
-        SETTLEMENTDATE
-      ORDER BY
-        duid
-    )
-    SELECT
-      UNIT,
-      DUID,
-      SETTLEMENTDATE,
-      INITIALMW
-    FROM
-      tt
-    UNION ALL
-    SELECT
-      UNIT,
-      DUID,
-      SETTLEMENTDATE,
-      INITIALMW
-    FROM
-      ${ref("EXTERNAL_TUNIT")}
-    WHERE
-      DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
-  ) as xxx
-  left join ${ref("DUID")} as yy on xxx.DUID = yy.DUID
+            duid
+        )
+        SELECT
+          UNIT,
+          DUID,
+          SETTLEMENTDATE,
+          INITIALMW
+        FROM
+          tt
+        UNION ALL
+        SELECT
+          UNIT,
+          DUID,
+          SETTLEMENTDATE,
+          INITIALMW
+        FROM
+          ${ref("EXTERNAL_TUNIT")}
+        WHERE
+          DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
+      ) as xxx
+      left join ${ref("DUID")} as yy on xxx.DUID = yy.DUID
+  ) AS XXXX
+  LEFT JOIN ${ref("PRICEARCHIVE")} as PRICEtable ON XXXX.region = PRICEtable.REGIONID
+  and XXXX.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE and XXXX.UNIT = PRICEtable.UNIT
+  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
