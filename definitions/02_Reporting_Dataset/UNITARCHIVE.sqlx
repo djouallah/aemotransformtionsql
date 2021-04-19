@@ -8,39 +8,67 @@ config {
   tags: ["Reporting Table History Data"]
 }
 
-select UNIT,xxx.DUID,StationName, Region, FuelSourceDescriptor, Technology,latitude, longitude,Tech, SETTLEMENTDATE,INITIALMW, DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR,DATE_TRUNC(DATE(SETTLEMENTDATE), DAY) DAY ,DATE_TRUNC(DATE(SETTLEMENTDATE), Month) AS  MONTH,TIME( SETTLEMENTDATE ) AS time, case
-            when UNIT = 'DUNIT'
-            then INITIALMW / 1.2
-            else INITIALMW / 2
-        end as Mwh from
-(WITH
-    tt AS (
-    SELECT
-        UNIT,DUID, SETTLEMENTDATE,
-        ARRAY_AGG(STRUCT(INTERVENTION, INITIALMW)
-        ORDER BY
-        INTERVENTION DESC LIMIT 1)[OFFSET (0)].* FROM  ${ref("EXTERNAL_DUNIT")} t
-    WHERE
-         DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00') 
-    GROUP BY
+select
+  UNIT,
+  xxx.DUID,
+  StationName,
+  Region,
+  FuelSourceDescriptor,
+  Technology,
+  latitude,
+  longitude,
+  Tech,
+  SETTLEMENTDATE,
+  INITIALMW,
+  DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR,
+  DATE_TRUNC(DATE(SETTLEMENTDATE), DAY) DAY,
+  DATE_TRUNC(DATE(SETTLEMENTDATE), Month) AS MONTH,
+  TIME(SETTLEMENTDATE) AS time,
+  case
+    when UNIT = 'DUNIT' then INITIALMW / 1.2
+    else INITIALMW / 2
+  end as Mwh
+from
+  (
+    WITH tt AS (
+      SELECT
+        UNIT,
+        DUID,
+        SETTLEMENTDATE,
+        ARRAY_AGG(
+          STRUCT(INTERVENTION, INITIALMW)
+          ORDER BY
+            INTERVENTION DESC
+          LIMIT
+            1
+        ) [OFFSET (0)].*
+      FROM
+        ${ref("EXTERNAL_DUNIT")} t
+      WHERE
+        DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
+      GROUP BY
         UNIT,
         DUID,
         SETTLEMENTDATE
-    ORDER BY
-        duid)
+      ORDER BY
+        duid
+    )
     SELECT
-    UNIT,DUID,SETTLEMENTDATE,INITIALMW
+      UNIT,
+      DUID,
+      SETTLEMENTDATE,
+      INITIALMW
     FROM
-    tt
+      tt
     UNION ALL
     SELECT
-    UNIT,
-    DUID,
-    SETTLEMENTDATE,
-    INITIALMW
+      UNIT,
+      DUID,
+      SETTLEMENTDATE,
+      INITIALMW
     FROM
-    ${ref("EXTERNAL_TUNIT")}
+      ${ref("EXTERNAL_TUNIT")}
     WHERE
-    DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00') ) as xxx
-    left join ${ref("DUID")} as yy
-    on xxx.DUID = yy.DUID
+      DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
+  ) as xxx
+  left join ${ref("DUID")} as yy on xxx.DUID = yy.DUID
