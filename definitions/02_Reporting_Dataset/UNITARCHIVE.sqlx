@@ -9,24 +9,23 @@ config {
 }
 
 select
-      XXXX.UNIT,
-      DUID,
-      StationName,
-      Region,
-      FuelSourceDescriptor,
-      Technology,
-      latitude,
-      longitude,
-      Tech,
-      XXXX.SETTLEMENTDATE,
-      INITIALMW,
-      XXXX.YEAR,
-      XXXX.DAY,
-      XXXX.MONTH,
-      time,
-      Mwh,
-      min(RRP) as RRP
-      
+  XXXX.UNIT,
+  DUID,
+  StationName,
+  Region,
+  FuelSourceDescriptor,
+  Technology,
+  latitude,
+  longitude,
+  Tech,
+  XXXX.SETTLEMENTDATE,
+  INITIALMW,
+  XXXX.YEAR,
+  XXXX.DAY,
+  XXXX.MONTH,
+  time,
+  Mwh,
+  min(RRP) as RRP
 from
   (
     select
@@ -91,9 +90,48 @@ from
           ${ref("EXTERNAL_TUNIT")}
         WHERE
           DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
+        UNION ALL
+        SELECT
+          "TUNIT" AS UNIT,
+          REGIONID AS DUID,
+          INTERVAL_DATETIME AS SETTLEMENTDATE,
+          sum(POWER) AS INITIALMW
+        FROM
+          ${ref("EXTERNAL_ROOFTOP_PARQUET")}
+        WHERE
+          DATE(INTERVAL_DATETIME) < CURRENT_DATE('+10:00')
+          and POWER <> 0
+          AND REGIONID NOT IN(
+            "QLDS",
+            "QLDN",
+            "QLDC",
+            "TASS",
+            "TASN"
+          )
+        group by
+          1,
+          2,
+          3
       ) as xxx
       left join ${ref("DUID")} as yy on xxx.DUID = yy.DUID
   ) AS XXXX
   LEFT JOIN ${ref("PRICEARCHIVE")} as PRICEtable ON XXXX.region = PRICEtable.REGIONID
-  and XXXX.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE and XXXX.UNIT = PRICEtable.UNIT
-  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+  and XXXX.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE
+  and XXXX.UNIT = PRICEtable.UNIT
+GROUP BY
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16
