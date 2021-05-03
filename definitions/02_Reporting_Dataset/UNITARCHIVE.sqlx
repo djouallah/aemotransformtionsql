@@ -24,6 +24,7 @@ select
   XXXX.DAY,
   XXXX.MONTH,
   time,
+  EXTRACT(HOUR FROM time) as Hour,
   Mwh,
   min(RRP) as RRP
 from
@@ -134,4 +135,4 @@ GROUP BY
   13,
   14,
   15,
-  16
+  16,17
