@@ -24,7 +24,11 @@ select
   XXXX.DAY,
   XXXX.MONTH,
   time,
-  EXTRACT(HOUR FROM time) as Hour,
+  EXTRACT(
+    HOUR
+    FROM
+      time
+  ) as Hour,
   Mwh,
   min(RRP) as RRP
 from
@@ -119,6 +123,8 @@ from
   LEFT JOIN ${ref("PRICEARCHIVE")} as PRICEtable ON XXXX.region = PRICEtable.REGIONID
   and XXXX.SETTLEMENTDATE = PRICEtable.SETTLEMENTDATE
   and XXXX.UNIT = PRICEtable.UNIT
+WHERE
+  INITIALMW != 0
 GROUP BY
   1,
   2,
@@ -135,4 +141,5 @@ GROUP BY
   13,
   14,
   15,
-  16,17
+  16,
+  17
