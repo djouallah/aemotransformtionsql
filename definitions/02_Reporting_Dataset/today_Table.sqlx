@@ -1,6 +1,10 @@
 config {
   schema: "ReportingDataset",
   type: "table",
+  description: "5 minutes NEM Data, see details in http://nemtracker.github.io/",
+  columns: {
+    SCADAVALUE: "Mw",
+    RRP: "Price $"},
   tags: ["Reporting Table"]
 }
 
