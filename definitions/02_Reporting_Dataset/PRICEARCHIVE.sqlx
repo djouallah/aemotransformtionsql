@@ -2,7 +2,7 @@ config {
   schema: "ReportingDataset",
   type: "table",
   bigquery: {
-    partitionBy: "YEAR",
+    partitionBy: "DATE_TRUNC(DAY, year)",
     clusterBy: ["UNIT", "REGIONID", "SETTLEMENTDATE"]
   },
   tags: ["Reporting Table History Data"]
@@ -38,6 +38,7 @@ SELECT
   REGIONID,
   SETTLEMENTDATE,
   RRP,
-  DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR
+  DATE_TRUNC(DATE(SETTLEMENTDATE), YEAR) YEAR,
+  DATE_TRUNC(DATE(SETTLEMENTDATE), day) DAY
 FROM
   tt
