@@ -2,8 +2,8 @@ config {
   schema: "ReportingDataset",
   type: "table",
   bigquery: {
-    partitionBy: "DATE_TRUNC(DAY, year)",
-    clusterBy: ["UNIT", "SETTLEMENTDATE","Region","FuelSourceDescriptor"]
+    partitionBy: "DATE_TRUNC(DAY, YEAR)",
+    clusterBy: ["UNIT", "SETTLEMENTDATE"]
   },
   tags: ["Reporting Table History Data"]
 }
