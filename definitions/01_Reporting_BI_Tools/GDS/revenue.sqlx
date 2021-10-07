@@ -17,7 +17,7 @@ with xx as (
       else "positive"
     end as price_split
   FROM
-     ${ref("UNITARCHIVE")} WHERE UNIT ="TUNIT"
+     ${ref("UNITARCHIVE")} WHERE UNIT ="DUNIT"
 )
 select
   StationName,
