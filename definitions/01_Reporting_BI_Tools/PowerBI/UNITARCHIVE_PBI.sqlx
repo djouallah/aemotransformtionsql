@@ -9,7 +9,17 @@ SELECT
   DUID,
   SETTLEMENTDATE,
   INITIALMW,
-  EXTRACT(DATE FROM SETTLEMENTDATE) as day,
-  EXTRACT(time FROM SETTLEMENTDATE) as time
+  EXTRACT(
+    DATE
+    FROM
+      SETTLEMENTDATE
+  ) as day,
+  EXTRACT(
+    time
+    FROM
+      SETTLEMENTDATE
+  ) as time
 FROM
   ${ref("UNITARCHIVE")}
+where
+  UNIT = "DUNIT"
