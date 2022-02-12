@@ -1,6 +1,0 @@
-config {
-  type: "declaration",
-  schema: "aemodataset",
-  name: "EXTERNAL_TUNIT",
-  description: "Production every 30 minute, history"
-}
