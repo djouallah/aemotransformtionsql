@@ -1,6 +1,0 @@
-config {
-  type: "declaration",
-  schema: "aemodataset",
-  name: "EXTERNAL_TREGION",
-  description: "Price very 30 minute, history"
-}
