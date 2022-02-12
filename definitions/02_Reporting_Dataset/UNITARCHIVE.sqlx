@@ -85,38 +85,7 @@ from
           INITIALMW
         FROM
           tt
-        UNION ALL
-        SELECT
-          UNIT,
-          DUID,
-          SETTLEMENTDATE,
-          INITIALMW
-        FROM
-          ${ref("EXTERNAL_TUNIT")}
-        WHERE
-          DATE(SETTLEMENTDATE) < CURRENT_DATE('+10:00')
-        UNION ALL
-        SELECT
-          "TUNIT" AS UNIT,
-          REGIONID AS DUID,
-          INTERVAL_DATETIME AS SETTLEMENTDATE,
-          sum(POWER) AS INITIALMW
-        FROM
-          ${ref("EXTERNAL_ROOFTOP_PARQUET")}
-        WHERE
-          DATE(INTERVAL_DATETIME) < CURRENT_DATE('+10:00')
-          and POWER <> 0
-          AND REGIONID NOT IN(
-            "QLDS",
-            "QLDN",
-            "QLDC",
-            "TASS",
-            "TASN"
-          )
-        group by
-          1,
-          2,
-          3
+        --need to add rooftop split by 5 minutes
       ) as xxx
       left join ${ref("DUID")} as yy on xxx.DUID = yy.DUID
   ) AS XXXX
