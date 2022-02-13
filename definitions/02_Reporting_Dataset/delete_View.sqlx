@@ -1,0 +1,1 @@
+drop materialized view  IF EXISTS `test-187010.ReportingDataset.UNITARCHIVE_SUMMARY`
