@@ -5,23 +5,23 @@ config {
   
   tags: ["Reporting Table History Data"]
 }
-
 SELECT
-  UNIT,
-  DUID,
-  StationName,
-  Region,
-  FuelSourceDescriptor,
-  Technology,
-  latitude,
-  longitude,
-  Tech,
-  YEAR,
+  xx.DUID,
+  yy.StationName,
+  yy.Region,
+  yy.FuelSourceDescriptor,
+  yy.Technology,
+  yy.latitude,
+  yy.longitude,
+  yy.Tech,
   DAY,
-  MONTH,
   SUM(Mwh) AS Mwh
 FROM
-   ${ref("UNITARCHIVE")}
+  ${ref("UNITARCHIVE")} xx
+INNER JOIN
+  ${ref("DUID")} yy
+ON
+  xx.DUID=YY.DUID
 GROUP BY
   1,
   2,
@@ -31,7 +31,4 @@ GROUP BY
   6,
   7,
   8,
-  9,
-  10,
-  11,
-  12
+  9
