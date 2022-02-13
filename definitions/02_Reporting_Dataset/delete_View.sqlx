@@ -1,1 +1,6 @@
+config {
+  
+  tags: ["Reporting Table History Data"]
+}
+
 drop materialized view  IF EXISTS `test-187010.ReportingDataset.UNITARCHIVE_SUMMARY`
