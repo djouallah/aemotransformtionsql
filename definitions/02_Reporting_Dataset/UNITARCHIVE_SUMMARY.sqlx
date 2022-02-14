@@ -19,7 +19,7 @@ SELECT
 FROM
   ${ref("UNITARCHIVE")} xx
 INNER JOIN
-  ${ref("DUID")} yy
+  test-187010.aemodataset.DUID yy
 ON
   xx.DUID=YY.DUID
 GROUP BY
