@@ -1,0 +1,31 @@
+config {
+  schema: "ReportingDataset",
+  type: "view",
+  materialized: true,  
+  
+  tags: ["Reporting Table History Data"]
+}
+SELECT
+  DUID,
+  StationName,
+  Region,
+  FuelSourceDescriptor,
+  Technology,
+  latitude,
+  longitude,
+  Tech,
+  DAY,
+  SUM(Mwh) AS Mwh
+FROM
+  ${ref("UNITARCHIVE")} xx
+
+GROUP BY
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
