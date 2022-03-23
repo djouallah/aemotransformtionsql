@@ -1,10 +1,11 @@
 config {
   schema: "ReportingDataset",
   type: "view",
-  materialized: true,  
-  
+  materialized: true,
+
   tags: ["Reporting Table History Data"]
 }
+
 SELECT
   xx.DUID,
   yy.StationName,
@@ -14,14 +15,16 @@ SELECT
   yy.latitude,
   yy.longitude,
   yy.Tech,
-  DAY,
+  dd.date,
+  dd.isoyear,
+  dd.isoweek,
+  dd.year,
+  dd.week,
   SUM(Mwh) AS Mwh
 FROM
   ${ref("UNITARCHIVE")} xx
-INNER JOIN
-  test-187010.ReportingDataset.DUID_DIM yy
-ON
-  xx.DUID=YY.DUID
+  INNER JOIN test-187010.ReportingDataset.DUID_DIM yy ON xx.DUID = YY.DUID
+  INNER JOIN test-187010.ReportingDataset.Mstdates dd ON xx.DAY = date
 GROUP BY
   1,
   2,
@@ -31,4 +34,7 @@ GROUP BY
   6,
   7,
   8,
-  9
+  9,
+  10,
+  11,
+  12,13
