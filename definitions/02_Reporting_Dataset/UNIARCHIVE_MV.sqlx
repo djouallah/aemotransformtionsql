@@ -1,11 +1,13 @@
 config {
   schema: "ReportingDataset",
   type: "view",
+   
   materialized: true,  
   
   tags: ["Reporting Table History Data"]
 }
 SELECT
+  UNIT,
   DUID,
   StationName,
   Region,
@@ -28,4 +30,5 @@ GROUP BY
   6,
   7,
   8,
-  9
+  9,
+  10
