@@ -16,7 +16,7 @@ SELECT
   latitude,
   longitude,
   Tech,
-  DAY,
+  DAY,year,month,
   SUM(Mwh) AS Mwh
 FROM
   ${ref("UNITARCHIVE")} xx
@@ -31,4 +31,4 @@ GROUP BY
   7,
   8,
   9,
-  10
+  10,11,12
