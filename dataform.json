@@ -2,5 +2,6 @@
     "warehouse": "bigquery",
     "defaultSchema": "dataform",
     "assertionSchema": "dataform_assertions",
-    "defaultDatabase": "test-187010"
+    "defaultDatabase": "test-187010",
+    "defaultLocation": "asia-northeast1"
 }
