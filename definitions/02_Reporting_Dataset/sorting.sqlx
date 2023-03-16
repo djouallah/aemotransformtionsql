@@ -4,7 +4,8 @@ config {
 }
 
 
-create or replace materialized view `test-187010.ReportingDataset.UNITARCHIVE_sort`  cluster by   DUID,SETTLEMENTDATE  as 
+create or replace materialized view `test-187010.ReportingDataset.UNITARCHIVE_sort`
+cluster by   StationName,DUID,SETTLEMENTDATE  as 
 
 SELECT
   *
