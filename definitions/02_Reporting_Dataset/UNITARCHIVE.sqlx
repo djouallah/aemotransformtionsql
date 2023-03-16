@@ -3,7 +3,7 @@ config {
   type: "table",
   bigquery: {
     partitionBy: "DATE_TRUNC(DAY, YEAR)",
-    clusterBy: ["UNIT", "SETTLEMENTDATE"]
+    clusterBy: ["SETTLEMENTDATE","DAY","DUID"]
   },
   tags: ["Reporting Table History Data"]
 }
