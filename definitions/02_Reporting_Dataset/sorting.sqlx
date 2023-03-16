@@ -1,0 +1,13 @@
+config {
+  
+  tags: ["Reporting Table History Data"]
+}
+
+
+create or replace materialized view `test-187010.ReportingDataset.UNITARCHIVE_sort`  cluster by   DUID,SETTLEMENTDATE  as 
+
+SELECT
+  *
+FROM
+  ${ref("UNITARCHIVE")} xx
+
