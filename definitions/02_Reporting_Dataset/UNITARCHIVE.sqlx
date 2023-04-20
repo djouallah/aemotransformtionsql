@@ -2,7 +2,6 @@ config {
   schema: "ReportingDataset",
   type: "table",
   bigquery: {
-    partitionBy: "DATE_TRUNC(DAY, YEAR)",
     clusterBy: ["SETTLEMENTDATE","DAY","DUID"]
   },
   tags: ["Reporting Table History Data"]
