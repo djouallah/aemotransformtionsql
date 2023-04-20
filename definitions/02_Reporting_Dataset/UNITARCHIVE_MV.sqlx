@@ -4,7 +4,7 @@ config {
 }
 
 
-create or replace materialized view `test-187010.ReportingDataset.UNITARCHIVE_MV`  cluster by  DAY, DUID as 
+create or replace materialized view `test-187010.ReportingDataset.UNITARCHIVE_MV_Summary`  cluster by  DAY, DUID as 
 
 SELECT
   UNIT,

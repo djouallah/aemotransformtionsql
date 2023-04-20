@@ -3,7 +3,7 @@ config {
   tags: ["Reporting Table History Data"]
 }
 
-drop materialized view  IF EXISTS `test-187010.ReportingDataset.UNITARCHIVE_MV`;
+drop materialized view  IF EXISTS `test-187010.ReportingDataset.UNITARCHIVE_MV_Summary`;
 
-drop materialized view  IF EXISTS `test-187010.ReportingDataset.UNITARCHIVE_sort`
+drop materialized view  IF EXISTS `test-187010.ReportingDataset.UNITARCHIVE_MV_Sort`
 
