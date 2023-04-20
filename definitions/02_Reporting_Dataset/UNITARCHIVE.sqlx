@@ -10,6 +10,7 @@ config {
 select
   XXXX.UNIT,
   DUID,
+  id as DUIDID,
   StationName,
   Region,
   FuelSourceDescriptor,
@@ -36,6 +37,7 @@ from
       xxx.UNIT,
       xxx.DUID,
       StationName,
+      id,
       Region,
       FuelSourceDescriptor,
       Technology,
@@ -110,4 +112,5 @@ GROUP BY
   14,
   15,
   16,
-  17
+  17,
+  18
