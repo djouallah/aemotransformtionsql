@@ -3,7 +3,7 @@ config {
   tags: ["Reporting Table History Data"]
 }
 
-create or replace materialized view `test-187010.ReportingDataset.UNITARCHIVE_sort`
+create or replace materialized view `test-187010.ReportingDataset.UNITARCHIVE_MV_Sort`
 cluster by   DUID,DAY,SETTLEMENTDATE  as 
 
 SELECT
