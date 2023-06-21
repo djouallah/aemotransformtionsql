@@ -3,7 +3,7 @@ config {
   type: "table",
   bigquery: {
     partitionBy: "DATE_TRUNC(DAY, YEAR)",
-    clusterBy: ["UNIT", "SETTLEMENTDATE"]
+    clusterBy: ["SETTLEMENTDATE","DAY","StationName","DUID"]
   },
   tags: ["Reporting Table History Data"]
 }
@@ -11,6 +11,7 @@ config {
 select
   XXXX.UNIT,
   DUID,
+  id as DUIDID,
   StationName,
   Region,
   FuelSourceDescriptor,
@@ -37,6 +38,7 @@ from
       xxx.UNIT,
       xxx.DUID,
       StationName,
+      id,
       Region,
       FuelSourceDescriptor,
       Technology,
@@ -111,4 +113,5 @@ GROUP BY
   14,
   15,
   16,
-  17
+  17,
+  18

@@ -1,11 +1,11 @@
 config {
-  schema: "ReportingDataset",
-  type: "view",
-   
-  materialized: true,  
   
   tags: ["Reporting Table History Data"]
 }
+
+
+create or replace materialized view `test-187010.ReportingDataset.UNITARCHIVE_MV_Summary`  cluster by  DAY, DUID as 
+
 SELECT
   UNIT,
   DUID,
