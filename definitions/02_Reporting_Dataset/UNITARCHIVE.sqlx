@@ -18,7 +18,7 @@ select
   latitude,
   longitude,
   Tech,
-  XXXX.SETTLEMENTDATE,
+  cast( XXXX.SETTLEMENTDATE as datetime) as SETTLEMENTDATE,
   INITIALMW,
   XXXX.YEAR,
   XXXX.DAY,
