@@ -3,25 +3,6 @@
     {
       "name": "production",
       "configOverride": {},
-      "schedules": [
-        {
-          "name": "Run every 5 minutes, Today Table",
-          "cron": "4-59/5 * * * *",
-          "tags": [
-            "Reporting Table"
-          ]
-        },
-        {
-          "name": "Run every morning",
-          "cron": "0 20 * * *",
-          "tags": [
-            "Reporting Table History Data"
-          ],
-          "options": {
-            "includeDependents": true
-          }
-        }
-      ],
       "gitRef": "master"
     }
   ]
