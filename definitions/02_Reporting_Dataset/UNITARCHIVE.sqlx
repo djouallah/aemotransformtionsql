@@ -2,7 +2,6 @@ config {
   schema: "ReportingDataset",
   type: "table",
   bigquery: {
-    partitionBy: "DATE_TRUNC(DAY, YEAR)",
     clusterBy: ["SETTLEMENTDATE","DAY","StationName","DUID"]
   },
   tags: ["Reporting Table History Data"]
@@ -19,7 +18,7 @@ select
   latitude,
   longitude,
   Tech,
-  XXXX.SETTLEMENTDATE,
+  cast( XXXX.SETTLEMENTDATE as datetime) as SETTLEMENTDATE,
   INITIALMW,
   XXXX.YEAR,
   XXXX.DAY,
